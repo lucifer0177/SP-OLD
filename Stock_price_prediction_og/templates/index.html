@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Price Prediction with XAI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        body {
+            background-image: url('https://m.economictimes.com/thumb/msid-62469146,width-1200,height-900,resizemode-4,imgsize-43715/graph-market-thickstock.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="text-center my-5 header-styling">
+            <h1 aria-label="Stock Price Prediction">Stock Price Prediction</h1>
+            <p class="lead">with Explainable AI Integration</p>
+        </header>
+
+        <div class="row align-items-center">
+            <div class="col-md-4 d-flex justify-content-center">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Enter Stock Details</h5>
+                        <div class="mb-3">
+                            <label for="stockSymbol" class="form-label">Stock Symbol</label>
+                            <input type="text" class="form-control" id="stockSymbol" placeholder="e.g., AAPL">
+                        </div>
+                        <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display: none;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <button id="predictBtn" class="btn btn-primary" aria-label="Predict Stock Price">Predict Price</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 d-flex justify-content-center">
+                <div id="predictionResults" class="card d-none">
+                    <div class="card-body">
+                        <h5 class="card-title" aria-label="Prediction Results">Prediction Results</h5>
+                        <div id="results">
+                            <div id="symbol" class="mb-3"></div>
+                            <div id="currentPrice" class="mb-3"></div>
+                            <div id="predictedPrice" class="mb-3"></div>
+                            <div id="explanation" class="mb-4"></div>
+                            <div id="buyPrice" class="mb-3"></div>
+                            <div id="sellPrice" class="mb-3"></div>
+                            <div id="buySellExplanation" class="mb-4"></div>
+                        </div>
+                        <div class="mt-4">
+                            <h6>Feature Importance</h6>
+                            <canvas id="featureImportanceChart" class="mb-4"></canvas>
+                        </div>
+                        <div class="mt-4">
+                            <h6>TradingView Chart</h6>
+                            <div id="tradingview-chart" style="height: 400px;"></div>
+                            <canvas id="priceChart" class="mb-4"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5 justify-content-center">
+            <div class="col-md-12 d-flex justify-content-center">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Stock of the Day</h5>
+                        <div id="stockOfTheDay" class="mb-3"></div>
+                        <div id="predictedProfit" class="mb-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<div class="container">
+        
+            <div class="row mt-5">
+                <div class="col-md-3">
+                    <div id ="mycard" class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Top Gainers</h5>
+                            <div id="topGainers"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div id ="mycard" class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Top Losers</h5>
+                            <div id="topLosers"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div id ="mycard" class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Most Active</h5>
+                            <div id="mostActive"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div id ="mycard" class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Trending Tickers</h5>
+                            <div id="trendingTickers"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast for notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // TradingView Chart Initialization
+        document.addEventListener("DOMContentLoaded", function() {
+            new TradingView.widget({
+                "container_id": "tradingview-chart",
+                "width": "100%",
+                "height": "400",
+                "symbol": "NASDAQ:AAPL",
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "light",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "hideideas": true,
+                "studies": ["MACD@tv-basicstudies"]
+            });
+        });
+
+        // Fetch and display top gainers, top losers, most active, and trending tickers
+        async function fetchMarketData() {
+            try {
+                const response = await fetch('/market-data');
+                const data = await response.json();
+                if (response.ok) {
+                    renderMarketData(data);
+                } else {
+                    throw new Error(data.error || 'Failed to fetch market data');
+                }
+            } catch (error) {
+                console.error('Error fetching market data:', error);
+            }
+        }
+
+        function renderMarketData(data) {
+            const topGainers = document.getElementById('topGainers');
+            const topLosers = document.getElementById('topLosers');
+            const mostActive = document.getElementById('mostActive');
+            const trendingTickers = document.getElementById('trendingTickers');
+
+            topGainers.innerHTML = data.topGainers.map(ticker => `<div>${ticker.symbol}: ${ticker.change}%</div>`).join('');
+            topLosers.innerHTML = data.topLosers.map(ticker => `<div>${ticker.symbol}: ${ticker.change}%</div>`).join('');
+            mostActive.innerHTML = data.mostActive.map(ticker => `<div>${ticker.symbol}: ${ticker.volume}</div>`).join('');
+            trendingTickers.innerHTML = data.trendingTickers.map(ticker => `<div>${ticker.symbol}: ${ticker.change}%</div>`).join('');
+        }
+
+        // Fetch market data on page load
+        fetchMarketData();
+    </script>
+</body>
+</html>

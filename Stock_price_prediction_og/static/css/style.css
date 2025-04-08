@@ -1,0 +1,171 @@
+/* Styling for the Dock Section */
+aside.right {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    width: 300px;
+    background-color: #f8f9fa;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.dockRevealShown {
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
+}
+
+.dock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dock-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.dock-item {
+    padding: 20px; /* Increased padding for better spacing */
+    margin-bottom: 10px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+.dock-item:hover {
+    transform: translateX(5px);
+}
+
+.ticker-item-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.last-price {
+    font-weight: bold;
+    margin-left: auto;
+}
+
+.percent-change {
+    margin-left: 10px;
+}
+
+.txt-positive {
+    color: #28a745;
+}
+
+.txt-negative {
+    color: #dc3545;
+}
+
+/* Header Styling */
+.header-styling {
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly more opaque for better readability */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Styling for Top Gainers and Losers */
+#topGainers, #topLosers {
+    margin: 20px 0;
+}
+
+#topGainers .ticker, #topLosers .ticker {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+#topGainers .ticker {
+    background-color: #e8f5e9; /* Light green for gainers */
+    border-left: 4px solid #4caf50; /* Green border */
+}
+
+#topLosers .ticker {
+    background-color: #ffebee; /* Light red for losers */
+    border-left: 4px solid #f44336; /* Red border */
+}
+
+#topGainers .ticker:hover, #topLosers .ticker:hover {
+    transform: translateX(10px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Styling for Stock of the Day */
+#stockOfTheDay {
+    padding: 15px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+#stockOfTheDay:hover {
+    transform: scale(1.05);
+    background-color: rgba(255, 255, 255, 1);
+}
+
+/* Fade-in effect for stock of the day */
+@keyframes fadeInStock {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#stockOfTheDay {
+    animation: fadeInStock 0.5s ease forwards;
+}
+
+
+#topGainers .ticker, #topLosers .ticker {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+    transition: background-color 0.3s ease; /* Added transition for background color */
+}
+
+/* Staggered animation delay */
+#topGainers .ticker:nth-child(1) { animation-delay: 0.1s; }
+#topGainers .ticker:nth-child(2) { animation-delay: 0.2s; }
+#topGainers .ticker:nth-child(3) { animation-delay: 0.3s; }
+#topGainers .ticker:nth-child(4) { animation-delay: 0.4s; }
+#topGainers .ticker:nth-child(5) { animation-delay: 0.5s; }
+
+#topLosers .ticker:nth-child(1) { animation-delay: 0.1s; }
+#topLosers .ticker:nth-child(2) { animation-delay: 0.2s; }
+#topLosers .ticker:nth-child(3) { animation-delay: 0.3s; }
+#topLosers .ticker:nth-child(4) { animation-delay: 0.4s; }
+#topLosers .ticker:nth-child(5) { animation-delay: 0.5s; }
+
+/* Percentage styling */
+.percentage {
+    font-weight: bold;
+    float: right;
+}
+
+.positive {
+    color: #4caf50;
+}
+
+.negative {
+    color: #f44336;
+}
+
+
+#mycard {
+    width: 300px; /* Fixed width */
+    height: 200px; /* Fixed height */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
